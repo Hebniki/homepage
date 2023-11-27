@@ -11,8 +11,8 @@ describe("Basic tests", () => {
     expect(multiply(2, 2)).toEqual(4);
   });
   test("Sum an array of numbers", () => {
-    // expect(sum([1, 2, 3])).toEqual(6);
-    // expect(sum([1, 2, 3, 4])).toEqual(10);
+    expect(sum([1, 2, 3])).toEqual(6);
+    expect(sum([1, 2, 3, 4])).toEqual(10);
     expect(sum([5, 8, 37])).toEqual(50);
   });
 });
