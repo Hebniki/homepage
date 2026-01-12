@@ -1,0 +1,188 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
+
+const pageTitle = "Silver/Gold Ratio - Last 3 Years";
+const pageDescription = "Historical chart showing the gold-to-silver price ratio from 2023 to 2025";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} />
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<style>
+			.chart-container {
+				max-width: 900px;
+				margin: 2rem auto;
+				padding: 1rem;
+			}
+			.chart-wrapper {
+				position: relative;
+				height: 400px;
+				width: 100%;
+			}
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+				margin-top: 2rem;
+			}
+			.stat-card {
+				background: #f5f5f5;
+				padding: 1rem;
+				border-radius: 8px;
+				text-align: center;
+			}
+			.stat-value {
+				font-size: 1.5rem;
+				font-weight: bold;
+				color: #333;
+			}
+			.stat-label {
+				font-size: 0.875rem;
+				color: #666;
+			}
+			.info-section {
+				margin-top: 2rem;
+				padding: 1rem;
+				background: #fafafa;
+				border-radius: 8px;
+			}
+			h1 {
+				text-align: center;
+			}
+			.subtitle {
+				text-align: center;
+				color: #666;
+				margin-bottom: 2rem;
+			}
+		</style>
+	</head>
+	<body>
+		<Header title={SITE_TITLE} />
+		<main>
+			<div class="chart-container">
+				<h1>Silver/Gold Price Ratio</h1>
+				<p class="subtitle">January 2023 - January 2026 (Higher = Gold more expensive relative to Silver)</p>
+
+				<div class="chart-wrapper">
+					<canvas id="ratioChart"></canvas>
+				</div>
+
+				<div class="stats-grid">
+					<div class="stat-card">
+						<div class="stat-value">~85:1</div>
+						<div class="stat-label">Current Ratio (Jan 2026)</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-value">73:1</div>
+						<div class="stat-label">3-Year Low (May 2024)</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-value">106:1</div>
+						<div class="stat-label">3-Year High (Apr 2025)</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-value">60-75:1</div>
+						<div class="stat-label">Historical "Normal" Range</div>
+					</div>
+				</div>
+
+				<div class="info-section">
+					<h3>What does this ratio mean?</h3>
+					<p>The gold/silver ratio shows how many ounces of silver it takes to buy one ounce of gold. A <strong>higher ratio</strong> means gold is expensive relative to silver (silver is "cheap"). A <strong>lower ratio</strong> suggests silver is relatively expensive compared to gold.</p>
+
+					<h3>Key Events (2023-2025)</h3>
+					<ul>
+						<li><strong>Sep 2022:</strong> Ratio peaked at ~96:1 during post-COVID recovery</li>
+						<li><strong>May 2024:</strong> Ratio hit 3-year low of 73:1 as silver rallied</li>
+						<li><strong>Apr 2025:</strong> Ratio spiked to 106:1 amid tariff concerns and gold's safe-haven rally to record highs</li>
+						<li><strong>Nov 2025:</strong> Ratio moderated to ~83:1 with gold near $4,000 and silver at ~$48</li>
+					</ul>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			// Historical Gold/Silver Ratio Data (Monthly averages, approximate)
+			const data = {
+				labels: [
+					'Jan 2023', 'Feb 2023', 'Mar 2023', 'Apr 2023', 'May 2023', 'Jun 2023',
+					'Jul 2023', 'Aug 2023', 'Sep 2023', 'Oct 2023', 'Nov 2023', 'Dec 2023',
+					'Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024',
+					'Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024', 'Nov 2024', 'Dec 2024',
+					'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025', 'May 2025', 'Jun 2025',
+					'Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026'
+				],
+				datasets: [{
+					label: 'Gold/Silver Ratio',
+					data: [
+						// 2023 - Starting high, gradual decline
+						84, 86, 82, 79, 81, 80,
+						78, 80, 82, 83, 82, 84,
+						// 2024 - Decline to low in May, then recovery
+						88, 89, 86, 82, 73, 76,
+						79, 84, 83, 81, 82, 84,
+						// 2025 - Spike in April, then moderation
+						90, 95, 100, 106, 100, 92,
+						88, 85, 84, 82, 83, 84, 85
+					],
+					borderColor: '#D4AF37',
+					backgroundColor: 'rgba(212, 175, 55, 0.1)',
+					fill: true,
+					tension: 0.3,
+					pointRadius: 3,
+					pointHoverRadius: 6
+				}]
+			};
+
+			const config = {
+				type: 'line',
+				data: data,
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: {
+							display: true,
+							position: 'top'
+						},
+						tooltip: {
+							callbacks: {
+								label: function(context) {
+									return `Ratio: ${context.parsed.y}:1`;
+								}
+							}
+						}
+					},
+					scales: {
+						y: {
+							title: {
+								display: true,
+								text: 'Oz Silver per Oz Gold'
+							},
+							min: 60,
+							max: 120
+						},
+						x: {
+							title: {
+								display: true,
+								text: 'Date'
+							}
+						}
+					},
+					interaction: {
+						intersect: false,
+						mode: 'index'
+					}
+				}
+			};
+
+			new Chart(document.getElementById('ratioChart'), config);
+		</script>
+	</body>
+</html>
